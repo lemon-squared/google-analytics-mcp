@@ -53,6 +53,10 @@ When the CLI speaks MCP over stdio, user-level Cursor config is `~/.cursor/mcp.j
 
 Scaffolded at [lemon-squared/google-tag-manager-mcp-server](https://github.com/lemon-squared/google-tag-manager-mcp-server). Continue that work in its own `docs/RESUME.md`. Do not put those tools in this repository.
 
+## Business Profile MCP
+
+Scaffolded at [lemon-squared/google-business-profile-mcp-server](https://github.com/lemon-squared/google-business-profile-mcp-server). Continue that work in its own `docs/RESUME.md`. Do not put those tools in this repository.
+
 ## Order of work
 
 1. Implement the nine read-only Analytics tools in `packages/core`, then make `packages/cli` an stdio MCP server.
