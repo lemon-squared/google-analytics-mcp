@@ -1,0 +1,87 @@
+# Resume: Analytics and Tag Manager MCP servers
+
+Scaffold only. No Google API calls, no OAuth app, and no published packages. Start from this file.
+
+Kaneo was unavailable when this was written (`/api/auth/get-session: Application not found`), so this document is the tracker.
+
+## Already shipped
+
+| Repo | Role |
+| --- | --- |
+| [lemon-squared/signal](https://github.com/lemon-squared/signal) | Consent banner, `cookieDomain`, Next.js GTM loader. Sites pass their own domain and container id. |
+| [lemon-squared/gtm-template-consent-mode](https://github.com/lemon-squared/gtm-template-consent-mode) | Consent Mode v2 web tag. Submitted to the Community Template Gallery on 22 Oct 2026. Review usually takes a few days. README badge stays red until listed. |
+| [lemon-squared/gtm-template-workflows](https://github.com/lemon-squared/gtm-template-workflows) | Shared gallery-status workflow. Sunday check flips the badge. |
+| [Runur PR #11](https://github.com/lemon-squared/Runur-Monorepo/pull/11) | Marketing depends on the Signal repo and sets `cookieDomain: ".runur.co.uk"`. |
+
+Server tags (Meta, Snap, TikTok, Reddit) are not repos yet. Each one will be `<vendor>-tag`, server container only, with a Tag Execution Consent Settings group: send always, or abort unless `ad_storage` is granted.
+
+## This repository
+
+TypeScript, formatted with Ultracite. The tools are read-only (`analytics.readonly`). The local CLI keeps client Analytics data on the machine that holds the credentials.
+
+| Path | Package | Status |
+| --- | --- | --- |
+| `packages/core` | `@lemon-squared/google-analytics-mcp-core` | `AnalyticsAuthProvider` only. Tools go here. |
+| `packages/cli` | `@lemon-squared/google-analytics-mcp` | Exits immediately and points at this file. |
+| `apps/worker` | not created | Hosted OAuth, after the CLI is in use. |
+
+`AnalyticsAuthProvider.getAccessToken()` is the only auth seam. The CLI and a later worker both implement it. Tools never see how the token was obtained.
+
+### Tools to add
+
+v1 does not create properties, links, or audiences.
+
+| Tool | Purpose |
+| --- | --- |
+| `get_account_summaries` | Accounts and properties the token can see. |
+| `get_property_details` | One property. |
+| `list_google_ads_links` | Google Ads links on a property. |
+| `list_property_annotations` | Notes on dates or periods. |
+| `get_custom_dimensions_and_metrics` | Custom dimensions and metrics. |
+| `run_report` | Core report. |
+| `run_realtime_report` | Realtime report. |
+| `run_funnel_report` | Funnel report. |
+| `run_conversions_report` | Conversions and attribution. |
+
+Reporting tools take optional filters, sort, pagination, and currency. A normal call is `get_account_summaries`, then property details or custom definitions, then a report.
+
+Credentials for the CLI, in order of preference for client work: a service account key, a refresh token, or a short-lived access token. One environment variable. Do not put that value in a committed `.cursor/mcp.json`.
+
+When the CLI speaks MCP over stdio, user-level Cursor config is `~/.cursor/mcp.json` so every internal and client project can see it.
+
+## Tag Manager MCP
+
+Not scaffolded. Create `lemon-squared/google-tag-manager-mcp-server` when work starts. Do not put those tools in this repository.
+
+Three paths: `packages/core` for the tools and schemas, `packages/cli` for stdio with credentials you supply, and `apps/worker` later for hosted Google OAuth. Both servers call Google through `GtmAuthProvider.getAccessToken()`. Cursor uses the CLI from `~/.cursor/mcp.json`. Build the CLI before the worker. Client containers should use the CLI.
+
+### Tools to add
+
+- Accounts, containers, and workspaces
+- Tags, triggers, variables, templates, built-in variables, and folders
+- Versions, version headers, and environments
+- User permissions and Google tag config
+- Server container clients, destinations, transformations, and zones
+- Auth status
+
+### Signal-aware tools
+
+Add these after generic container edits work:
+
+- Import [gtm-template-consent-mode](https://github.com/lemon-squared/gtm-template-consent-mode) into a web container.
+- Create the Lemon Signal tag on a Consent Initialization trigger.
+- Require `analytics_storage` on the Google tag.
+- Later, import each `<vendor>-tag` into a server container and set Tag Execution Consent Settings.
+
+## Order of work
+
+1. Implement the nine read-only Analytics tools in `packages/core`, then make `packages/cli` an stdio MCP server.
+2. Create `google-tag-manager-mcp-server` with the same core and CLI split.
+3. Add the Signal template tools on top of generic Tag Manager CRUD.
+4. Add hosted OAuth workers only after the local CLIs are what Cursor uses for client projects.
+
+## Constraints
+
+- Format with Ultracite (`bun run format`). The config extends `ultracite/biome/core`.
+- v1 Analytics scope stays `analytics.readonly`.
+- Keep client Google data on the local CLI until a hosted worker exists.

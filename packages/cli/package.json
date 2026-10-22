@@ -1,0 +1,12 @@
+{
+  "name": "@lemon-squared/google-analytics-mcp",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "google-analytics-mcp": "./src/index.ts"
+  },
+  "dependencies": {
+    "@lemon-squared/google-analytics-mcp-core": "workspace:*"
+  }
+}
