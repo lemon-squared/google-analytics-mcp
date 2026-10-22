@@ -51,33 +51,13 @@ When the CLI speaks MCP over stdio, user-level Cursor config is `~/.cursor/mcp.j
 
 ## Tag Manager MCP
 
-Not scaffolded. Create `lemon-squared/google-tag-manager-mcp-server` when work starts. Do not put those tools in this repository.
-
-Three paths: `packages/core` for the tools and schemas, `packages/cli` for stdio with credentials you supply, and `apps/worker` later for hosted Google OAuth. Both servers call Google through `GtmAuthProvider.getAccessToken()`. Cursor uses the CLI from `~/.cursor/mcp.json`. Build the CLI before the worker. Client containers should use the CLI.
-
-### Tools to add
-
-- Accounts, containers, and workspaces
-- Tags, triggers, variables, templates, built-in variables, and folders
-- Versions, version headers, and environments
-- User permissions and Google tag config
-- Server container clients, destinations, transformations, and zones
-- Auth status
-
-### Signal-aware tools
-
-Add these after generic container edits work:
-
-- Import [gtm-template-consent-mode](https://github.com/lemon-squared/gtm-template-consent-mode) into a web container.
-- Create the Lemon Signal tag on a Consent Initialization trigger.
-- Require `analytics_storage` on the Google tag.
-- Later, import each `<vendor>-tag` into a server container and set Tag Execution Consent Settings.
+Scaffolded at [lemon-squared/google-tag-manager-mcp-server](https://github.com/lemon-squared/google-tag-manager-mcp-server). Continue that work in its own `docs/RESUME.md`. Do not put those tools in this repository.
 
 ## Order of work
 
 1. Implement the nine read-only Analytics tools in `packages/core`, then make `packages/cli` an stdio MCP server.
-2. Create `google-tag-manager-mcp-server` with the same core and CLI split.
-3. Add the Signal template tools on top of generic Tag Manager CRUD.
+2. Implement the Tag Manager container tools in [google-tag-manager-mcp-server](https://github.com/lemon-squared/google-tag-manager-mcp-server), then its stdio CLI.
+3. Add the Signal template tools on top of generic container edits.
 4. Add hosted OAuth workers only after the local CLIs are what Cursor uses for client projects.
 
 ## Constraints
